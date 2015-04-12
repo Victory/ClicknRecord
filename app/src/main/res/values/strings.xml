@@ -3,4 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="record_now">Record Now</string>
+    <string name="recording_for_X_seconds">Recording for 45 seconds</string>
 </resources>

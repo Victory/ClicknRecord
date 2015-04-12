@@ -1,9 +1,13 @@
 package org.dfhu.clicknrecord;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 
 public class CnRecord extends ActionBarActivity {
@@ -12,8 +16,18 @@ public class CnRecord extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cn_record);
-    }
 
+        Button recordNow = (Button) findViewById(R.id.recordNow);
+
+        recordNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CharSequence msg = getString(R.string.recording_for_X_seconds);
+                Context context = getApplicationContext();
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
