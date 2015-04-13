@@ -1,6 +1,7 @@
 package org.dfhu.clicknrecord;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -34,6 +35,22 @@ public class CnRecord extends ActionBarActivity {
             }
         });
 
+
+        final Button playback = (Button) findViewById(R.id.playback);
+
+        playback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MediaPlayer mPlayer = new MediaPlayer();
+                try {
+                    mPlayer.setDataSource(getOutputFilename());
+                    mPlayer.prepare();
+                    mPlayer.start();
+                } catch (IOException exc) {
+                    Log.e("playback", "prepare() failed:" + exc.getMessage());
+                }
+            }
+        });
     }
 
     private void recordNow()
@@ -49,7 +66,8 @@ public class CnRecord extends ActionBarActivity {
         try {
             mr.prepare();
         } catch (IOException exc) {
-            Log.e("record", "prepare() failed");
+            Log.e("record", "prepare() failed " + exc.getMessage());
+            return;
         }
         mr.start();
 
