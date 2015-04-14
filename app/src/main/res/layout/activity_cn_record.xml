@@ -40,6 +40,13 @@
             android:text="Playback"
             android:id="@+id/playback"
             android:layout_gravity="center_horizontal" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recordingTimeProgressBar"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
 

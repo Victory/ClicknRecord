@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -18,20 +19,31 @@ import java.io.IOException;
 
 public class CnRecord extends ActionBarActivity {
 
+
+    private MediaRecorder mr = null;
+    private Integer numSeconds = 5;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cn_record);
 
-        final Button recordNow = (Button) findViewById(R.id.recordNow);
+        final Button recordNowButton = (Button) findViewById(R.id.recordNow);
 
-        recordNow.setOnClickListener(new View.OnClickListener() {
+        recordNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CharSequence msg = getString(R.string.recording_for_X_seconds);
                 Context context = getApplicationContext();
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                recordNow();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recordNow();
+                    }
+                }).start();
+
             }
         });
 
@@ -57,7 +69,11 @@ public class CnRecord extends ActionBarActivity {
     {
         String fn = getOutputFilename();
 
-        MediaRecorder mr = new MediaRecorder();
+        ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
+        mProgress.setMax(numSeconds);
+        mProgress.setProgress(10);
+
+        mr = new MediaRecorder();
         mr.setAudioSource(MediaRecorder.AudioSource.MIC);
         mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mr.setOutputFile(fn);
@@ -71,11 +87,16 @@ public class CnRecord extends ActionBarActivity {
         }
         mr.start();
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException exc) {
-            // ok
+
+        for (int ii = 1; ii <= numSeconds + 1; ii++) {
+            try {
+                mProgress.setProgress(ii);
+                Thread.sleep(1000);
+            } catch (InterruptedException exc) {
+                // ok
+            }
         }
+
 
         mr.stop();
         mr.release();
