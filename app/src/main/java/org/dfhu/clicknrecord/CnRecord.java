@@ -22,6 +22,7 @@ public class CnRecord extends ActionBarActivity {
 
     private MediaRecorder mr = null;
     private Integer numSeconds = 5;
+    private boolean recordingStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,15 @@ public class CnRecord extends ActionBarActivity {
                 }
             }
         });
+
+        Button stopRecordingButton = (Button) findViewById(R.id.stopRecording);
+
+        stopRecordingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recordingStopped = true;
+            }
+        });
     }
 
     private void recordNow()
@@ -87,8 +97,12 @@ public class CnRecord extends ActionBarActivity {
         }
         mr.start();
 
-
+        recordingStopped = false;
         for (int ii = 1; ii <= numSeconds + 1; ii++) {
+            if (recordingStopped) {
+                break;
+            }
+
             try {
                 mProgress.setProgress(ii);
                 Thread.sleep(1000);
@@ -96,7 +110,6 @@ public class CnRecord extends ActionBarActivity {
                 // ok
             }
         }
-
 
         mr.stop();
         mr.release();
