@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -117,13 +118,27 @@ public class CnRecord extends ActionBarActivity {
             }
         }
 
-        mr.stop();
+        try {
+            mr.stop();
+        } catch (IllegalStateException e) {
+            Toast.makeText(
+                    getApplicationContext(), "Recording Already Stopped", Toast.LENGTH_SHORT);
+        }
+
         mr.release();
+
     }
 
 
     private String getOutputFilename () {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        File recordingDir = new File(dir + "/clicknrecord");
+        if (!recordingDir.exists()) {
+            if (!recordingDir.mkdir()) {
+                throw new RuntimeException("Could not create directory in: " + dir);
+            }
+        }
 
         if (fileNumberIndex == 2) {
             fileNumberIndex = 1;
@@ -132,9 +147,8 @@ public class CnRecord extends ActionBarActivity {
         }
 
         String fileNum = fileNumberIndex.toString();
-
         // TODO: add human readable timestamp to filename
-        return dir + "/recorded-" + fileNum + ".3gp";
+        return recordingDir + "/recorded-" + fileNum + ".3gp";
     }
 
     @Override
