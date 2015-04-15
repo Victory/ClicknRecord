@@ -90,6 +90,7 @@ public class CnRecord extends ActionBarActivity {
         mProgress.setProgress(10);
 
         mr = new MediaRecorder();
+        mr.setMaxFileSize(1 << 20);
         mr.setAudioSource(MediaRecorder.AudioSource.MIC);
         mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mr.setOutputFile(fn);
@@ -132,6 +133,11 @@ public class CnRecord extends ActionBarActivity {
 
     }
 
+
+    private String getOutputDirName ()
+    {
+        return null;
+    }
 
     private String getOutputFilename () {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
