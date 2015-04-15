@@ -23,6 +23,7 @@ public class CnRecord extends ActionBarActivity {
     private MediaRecorder mr = null;
     private Integer numSeconds = 5;
     private boolean recordingStopped = false;
+    private Integer fileNumberIndex = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,10 @@ public class CnRecord extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 recordingStopped = true;
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Stopping Recording",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -100,6 +105,7 @@ public class CnRecord extends ActionBarActivity {
         recordingStopped = false;
         for (int ii = 1; ii <= numSeconds + 1; ii++) {
             if (recordingStopped) {
+                mProgress.setProgress(numSeconds);
                 break;
             }
 
@@ -119,8 +125,16 @@ public class CnRecord extends ActionBarActivity {
     private String getOutputFilename () {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
 
+        if (fileNumberIndex == 2) {
+            fileNumberIndex = 1;
+        } else {
+            fileNumberIndex = 2;
+        }
+
+        String fileNum = fileNumberIndex.toString();
+
         // TODO: add human readable timestamp to filename
-        return dir + "/recorded.3gp";
+        return dir + "/recorded-" + fileNum + ".3gp";
     }
 
     @Override
