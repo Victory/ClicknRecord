@@ -101,7 +101,12 @@ public class CnRecord extends ActionBarActivity {
             Log.e("record", "prepare() failed " + exc.getMessage());
             return;
         }
-        mr.start();
+
+        try {
+            mr.start();
+        } catch (IllegalStateException exc) {
+            return; // can't do anything with already running recorder
+        }
 
         recordingStopped = false;
         for (int ii = 1; ii <= numSeconds + 1; ii++) {
@@ -121,8 +126,9 @@ public class CnRecord extends ActionBarActivity {
         try {
             mr.stop();
         } catch (IllegalStateException e) {
-            Toast.makeText(
-                    getApplicationContext(), "Recording Already Stopped", Toast.LENGTH_SHORT);
+            // can't toast here throws
+            // java.lang.RuntimeException: Can't create handler
+            // inside thread that has not called Looper.prepare()
         }
 
         mr.release();
