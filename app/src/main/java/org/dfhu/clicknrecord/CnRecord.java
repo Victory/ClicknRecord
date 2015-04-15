@@ -102,11 +102,8 @@ public class CnRecord extends ActionBarActivity {
             return;
         }
 
-        try {
-            mr.start();
-        } catch (IllegalStateException exc) {
-            return; // can't do anything with already running recorder
-        }
+
+        mr.start();
 
         recordingStopped = false;
         for (int ii = 1; ii <= numSeconds + 1; ii++) {
