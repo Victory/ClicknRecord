@@ -10,12 +10,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class CnRecord extends ActionBarActivity {
@@ -79,6 +82,37 @@ public class CnRecord extends ActionBarActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
+
+        File[] files = getOutputDir().listFiles();
+        if (files.length > 0) {
+            ArrayList<RecordedFile> fileList = new ArrayList<>(files.length);
+            for (File file: getOutputDir().listFiles()) {
+                RecordedFile recorded = new RecordedFile(file.getAbsolutePath());
+                fileList.add(recorded);
+            }
+
+
+            final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
+            RecordingsAdapter songAdapter = new RecordingsAdapter(this, fileList);
+            recordingsView.setAdapter(songAdapter);
+            recordingsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    RecordedFile rf = (RecordedFile) recordingsView.getItemAtPosition(position);
+
+                    MediaPlayer mPlayer = new MediaPlayer();
+
+                    try {
+                        mPlayer.setDataSource(rf.filename);
+                        mPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mPlayer.start();
+                }
+            });
+        }
     }
 
     private void recordNow()
@@ -133,13 +167,8 @@ public class CnRecord extends ActionBarActivity {
 
     }
 
-
-    private String getOutputDirName ()
+    private File getOutputDir ()
     {
-        return null;
-    }
-
-    private String getOutputFilename () {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         File recordingDir = new File(dir + "/clicknrecord");
@@ -148,6 +177,11 @@ public class CnRecord extends ActionBarActivity {
                 throw new RuntimeException("Could not create directory in: " + dir);
             }
         }
+        return recordingDir;
+    }
+
+    private String getOutputFilename () {
+        File recordingDir = getOutputDir();
 
         if (fileNumberIndex == 2) {
             fileNumberIndex = 1;
