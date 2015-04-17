@@ -87,7 +87,7 @@ public class CnRecord extends ActionBarActivity {
         if (files.length > 0) {
             ArrayList<RecordedFile> fileList = new ArrayList<>(files.length);
             for (File file: getOutputDir().listFiles()) {
-                RecordedFile recorded = new RecordedFile(file.getAbsolutePath());
+                RecordedFile recorded = new RecordedFile(file.getName(), file.getAbsolutePath());
                 fileList.add(recorded);
             }
 
@@ -103,7 +103,7 @@ public class CnRecord extends ActionBarActivity {
                     MediaPlayer mPlayer = new MediaPlayer();
 
                     try {
-                        mPlayer.setDataSource(rf.filename);
+                        mPlayer.setDataSource(rf.absolutePath);
                         mPlayer.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
