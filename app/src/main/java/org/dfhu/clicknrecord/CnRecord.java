@@ -3,6 +3,7 @@ package org.dfhu.clicknrecord;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -28,11 +29,18 @@ public class CnRecord extends ActionBarActivity {
     private Integer numSeconds = 5;
     private boolean recordingStopped = false;
     private Integer fileNumberIndex = 1;
+    private RecordingsAdapter recordingsAdapter = null;
+    final ArrayList<RecordedFile> fileList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cn_record);
+
+
+        final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
+        recordingsAdapter = new RecordingsAdapter(this, fileList);
+        recordingsView.setAdapter(recordingsAdapter);
 
         final Button recordNowButton = (Button) findViewById(R.id.recordNow);
 
@@ -43,12 +51,21 @@ public class CnRecord extends ActionBarActivity {
                 Context context = getApplicationContext();
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 
-                new Thread(new Runnable() {
+
+                AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
+
                     @Override
-                    public void run() {
+                    protected Integer doInBackground(Integer... params) {
                         recordNow();
+                        return 1;
                     }
-                }).start();
+
+                    @Override
+                    protected void onPostExecute(Integer result) {
+                        updateAdapter();
+                    }
+                };
+                task.execute(0);
 
             }
         });
@@ -85,51 +102,58 @@ public class CnRecord extends ActionBarActivity {
 
         File[] files = getOutputDir().listFiles();
         if (files.length > 0) {
-            final ArrayList<RecordedFile> fileList = new ArrayList<>(files.length);
             for (File file: getOutputDir().listFiles()) {
                 RecordedFile recorded = new RecordedFile(file.getName(), file.getAbsolutePath());
                 fileList.add(recorded);
             }
-
-
-            final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
-            final RecordingsAdapter recordingsAdapter = new RecordingsAdapter(this, fileList);
-            recordingsView.setAdapter(recordingsAdapter);
-
-            recordingsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    RecordedFile rf = (RecordedFile) recordingsView.getItemAtPosition(position);
-
-                    MediaPlayer mPlayer = new MediaPlayer();
-
-                    try {
-                        mPlayer.setDataSource(rf.absolutePath);
-                        mPlayer.prepare();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    mPlayer.start();
-                }
-            });
-
-            recordingsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(
-                        AdapterView<?> parent, View view, int position, long id) {
-                    RecordedFile rf = (RecordedFile) recordingsView.getItemAtPosition(position);
-                    File file = new File(rf.absolutePath);
-
-                    if (file.delete()) {
-                        fileList.remove(position);
-                        recordingsAdapter.notifyDataSetChanged();
-                        return true;
-                    }
-                    return false;
-                }
-            });
         }
+
+        recordingsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                RecordedFile rf = (RecordedFile) recordingsView.getItemAtPosition(position);
+
+                MediaPlayer mPlayer = new MediaPlayer();
+
+                try {
+                    mPlayer.setDataSource(rf.absolutePath);
+                    mPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mPlayer.start();
+            }
+        });
+
+        recordingsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(
+                    AdapterView<?> parent, View view, int position, long id) {
+                RecordedFile rf = (RecordedFile) recordingsView.getItemAtPosition(position);
+                File file = new File(rf.absolutePath);
+                if (file.delete()) {
+                    fileList.remove(position);
+                    updateAdapter();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void updateAdapter ()
+    {
+        File[] files = getOutputDir().listFiles();
+        fileList.clear();
+        if (files.length > 0) {
+
+            for (File file : getOutputDir().listFiles()) {
+                RecordedFile recorded = new RecordedFile(file.getName(), file.getAbsolutePath());
+                fileList.add(recorded);
+            }
+        }
+        recordingsAdapter.notifyDataSetChanged();
     }
 
     private void recordNow()
@@ -181,7 +205,6 @@ public class CnRecord extends ActionBarActivity {
         }
 
         mr.release();
-
     }
 
     private File getOutputDir ()
@@ -200,11 +223,7 @@ public class CnRecord extends ActionBarActivity {
     private String getOutputFilename () {
         File recordingDir = getOutputDir();
 
-        if (fileNumberIndex == 2) {
-            fileNumberIndex = 1;
-        } else {
-            fileNumberIndex = 2;
-        }
+        fileNumberIndex = (fileNumberIndex + 1) % 5;
 
         String fileNum = fileNumberIndex.toString();
         // TODO: add human readable timestamp to filename
