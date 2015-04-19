@@ -85,7 +85,7 @@ public class CnRecord extends ActionBarActivity {
 
         File[] files = getOutputDir().listFiles();
         if (files.length > 0) {
-            ArrayList<RecordedFile> fileList = new ArrayList<>(files.length);
+            final ArrayList<RecordedFile> fileList = new ArrayList<>(files.length);
             for (File file: getOutputDir().listFiles()) {
                 RecordedFile recorded = new RecordedFile(file.getName(), file.getAbsolutePath());
                 fileList.add(recorded);
@@ -93,8 +93,9 @@ public class CnRecord extends ActionBarActivity {
 
 
             final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
-            RecordingsAdapter songAdapter = new RecordingsAdapter(this, fileList);
-            recordingsView.setAdapter(songAdapter);
+            final RecordingsAdapter recordingsAdapter = new RecordingsAdapter(this, fileList);
+            recordingsView.setAdapter(recordingsAdapter);
+
             recordingsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -110,6 +111,22 @@ public class CnRecord extends ActionBarActivity {
                     }
 
                     mPlayer.start();
+                }
+            });
+
+            recordingsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(
+                        AdapterView<?> parent, View view, int position, long id) {
+                    RecordedFile rf = (RecordedFile) recordingsView.getItemAtPosition(position);
+                    File file = new File(rf.absolutePath);
+
+                    if (file.delete()) {
+                        fileList.remove(position);
+                        recordingsAdapter.notifyDataSetChanged();
+                        return true;
+                    }
+                    return false;
                 }
             });
         }
