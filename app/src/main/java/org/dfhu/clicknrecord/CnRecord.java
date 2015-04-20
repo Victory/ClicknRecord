@@ -156,8 +156,7 @@ public class CnRecord extends ActionBarActivity {
         recordingsAdapter.notifyDataSetChanged();
     }
 
-    private void recordNow()
-    {
+    private void recordNow() {
         String fn = getOutputFilename();
 
         ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
@@ -185,6 +184,15 @@ public class CnRecord extends ActionBarActivity {
         for (int ii = 1; ii <= numSeconds + 1; ii++) {
             if (recordingStopped) {
                 mProgress.setProgress(numSeconds);
+
+
+                // little extra time after stop button
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 break;
             }
 
@@ -195,6 +203,7 @@ public class CnRecord extends ActionBarActivity {
                 // ok
             }
         }
+
 
         try {
             mr.stop();
