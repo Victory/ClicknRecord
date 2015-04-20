@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class CnRecord extends ActionBarActivity {
@@ -232,11 +234,16 @@ public class CnRecord extends ActionBarActivity {
     private String getOutputFilename () {
         File recordingDir = getOutputDir();
 
+        Date now = new Date();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-H:mm:ss");
+
+
         fileNumberIndex = (fileNumberIndex + 1) % 5;
 
         String fileNum = fileNumberIndex.toString();
-        // TODO: add human readable timestamp to filename
-        return recordingDir + "/recorded-" + fileNum + ".3gp";
+
+        return recordingDir + "/recorded-" + dateFormat.format(now) + ".3gp";
     }
 
     @Override
