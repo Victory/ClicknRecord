@@ -32,7 +32,7 @@
             android:id="@+id/playback"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
-            android:background="#33ee33" />
+            android:background="#338833" />
 
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
