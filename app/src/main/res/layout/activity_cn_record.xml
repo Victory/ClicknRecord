@@ -11,28 +11,31 @@
         android:layout_height="fill_parent">
 
         <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Playback"
+            android:id="@+id/playback"
+            android:layout_marginTop="30dp"
+            android:background="#338833"
+            android:layout_marginBottom="30dp" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop Recording"
+            android:id="@+id/stopRecording"
+            android:background="#000"
+            android:textColor="#eeeeff" />
+
+        <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/record_now"
             android:id="@+id/recordNow"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="20dp"
-            android:background="#aa3333" />
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Stop Recording"
-            android:id="@+id/stopRecording" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Playback"
-            android:id="@+id/playback"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:background="#338833" />
+            android:background="#aa3333"
+            android:padding="40dp" />
 
         <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
