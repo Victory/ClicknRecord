@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 
@@ -30,7 +32,6 @@ public class CnRecord extends ActionBarActivity {
     private MediaRecorder mr = null;
     private Integer numSeconds = 5;
     private boolean recordingStopped = false;
-    private Integer fileNumberIndex = 1;
     private RecordingsAdapter recordingsAdapter = null;
     final ArrayList<RecordedFile> fileList = new ArrayList<>();
 
@@ -78,9 +79,15 @@ public class CnRecord extends ActionBarActivity {
         playback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String lastFileName = getLatestFilename();
+                if (lastFileName == null) {
+                    return;
+                }
+
                 MediaPlayer mPlayer = new MediaPlayer();
                 try {
-                    mPlayer.setDataSource(getOutputFilename());
+                    mPlayer.setDataSource(getLatestFilename());
                     mPlayer.prepare();
                     mPlayer.start();
                 } catch (IOException exc) {
@@ -231,17 +238,28 @@ public class CnRecord extends ActionBarActivity {
         return recordingDir;
     }
 
+    /**
+     * get the last file recorded
+     * @return String
+     */
+    private String getLatestFilename () {
+        File recordingDir = getOutputDir();
+
+        File[] files = recordingDir.listFiles();
+        Arrays.sort(files);
+
+        if (files.length > 0) {
+            return files[files.length - 1].getAbsolutePath();
+        }
+        return null;
+    }
+
     private String getOutputFilename () {
         File recordingDir = getOutputDir();
 
         Date now = new Date();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-H:mm:ss");
-
-
-        fileNumberIndex = (fileNumberIndex + 1) % 5;
-
-        String fileNum = fileNumberIndex.toString();
 
         return recordingDir + "/recorded-" + dateFormat.format(now) + ".3gp";
     }
