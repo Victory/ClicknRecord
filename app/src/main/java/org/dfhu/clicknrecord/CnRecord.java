@@ -45,69 +45,11 @@ public class CnRecord extends ActionBarActivity {
         recordingsAdapter = new RecordingsAdapter(this, fileList);
         recordingsView.setAdapter(recordingsAdapter);
 
-        final Button recordNowButton = (Button) findViewById(R.id.recordNow);
+        bindRecordNowButton();
 
-        recordNowButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CharSequence msg = getString(R.string.recording_for_X_seconds);
-                Context context = getApplicationContext();
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+        bindPlaybackButton();
 
-
-                AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
-
-                    @Override
-                    protected Integer doInBackground(Integer... params) {
-                        recordNow();
-                        return 1;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Integer result) {
-                        updateAdapter();
-                    }
-                };
-                task.execute(0);
-
-            }
-        });
-
-
-        final Button playback = (Button) findViewById(R.id.playback);
-
-        playback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String lastFileName = getLatestFilename();
-                if (lastFileName == null) {
-                    return;
-                }
-
-                MediaPlayer mPlayer = new MediaPlayer();
-                try {
-                    mPlayer.setDataSource(getLatestFilename());
-                    mPlayer.prepare();
-                    mPlayer.start();
-                } catch (IOException exc) {
-                    Log.e("playback", "prepare() failed:" + exc.getMessage());
-                }
-            }
-        });
-
-        Button stopRecordingButton = (Button) findViewById(R.id.stopRecording);
-
-        stopRecordingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordingStopped = true;
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Stopping Recording",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        bindStopRecordingButton();
 
         File[] files = getOutputDir().listFiles();
         if (files.length > 0) {
@@ -147,6 +89,75 @@ public class CnRecord extends ActionBarActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+    }
+
+    private void bindStopRecordingButton() {
+        Button stopRecordingButton = (Button) findViewById(R.id.stopRecording);
+
+        stopRecordingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recordingStopped = true;
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Stopping Recording",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void bindPlaybackButton() {
+        final Button playback = (Button) findViewById(R.id.playback);
+
+        playback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String lastFileName = getLatestFilename();
+                if (lastFileName == null) {
+                    return;
+                }
+
+                MediaPlayer mPlayer = new MediaPlayer();
+                try {
+                    mPlayer.setDataSource(getLatestFilename());
+                    mPlayer.prepare();
+                    mPlayer.start();
+                } catch (IOException exc) {
+                    Log.e("playback", "prepare() failed:" + exc.getMessage());
+                }
+            }
+        });
+    }
+
+    private void bindRecordNowButton() {
+        final Button recordNowButton = (Button) findViewById(R.id.recordNow);
+
+        recordNowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CharSequence msg = getString(R.string.recording_for_X_seconds);
+                Context context = getApplicationContext();
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+
+
+                AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
+
+                    @Override
+                    protected Integer doInBackground(Integer... params) {
+                        recordNow();
+                        return 1;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Integer result) {
+                        updateAdapter();
+                    }
+                };
+                task.execute(0);
+
             }
         });
     }
