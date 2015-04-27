@@ -32,6 +32,8 @@ public class CnRecord extends ActionBarActivity {
     private MediaRecorder mr = null;
     private Integer numSeconds = 5;
     private boolean recordingStopped = false;
+    private boolean currentlyPlaying = false;
+
     private RecordingsAdapter recordingsAdapter = null;
     final ArrayList<RecordedFile> fileList = new ArrayList<>();
 
@@ -115,19 +117,41 @@ public class CnRecord extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
-                String lastFileName = getLatestFilename();
-                if (lastFileName == null) {
-                    return;
-                }
 
-                MediaPlayer mPlayer = new MediaPlayer();
-                try {
-                    mPlayer.setDataSource(getLatestFilename());
-                    mPlayer.prepare();
-                    mPlayer.start();
-                } catch (IOException exc) {
-                    Log.e("playback", "prepare() failed:" + exc.getMessage());
-                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentlyPlaying) {
+                            return;
+                        }
+
+                        currentlyPlaying = true;
+                        String lastFileName = getLatestFilename();
+                        if (lastFileName == null) {
+                            return;
+                        }
+
+                        MediaPlayer mPlayer = new MediaPlayer();
+                        try {
+                            mPlayer.setDataSource(getLatestFilename());
+                            mPlayer.prepare();
+                            mPlayer.start();
+                        } catch (IOException exc) {
+                            Log.e("playback", "prepare() failed:" + exc.getMessage());
+                        }
+
+                        while(mPlayer.isPlaying()) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        currentlyPlaying = false;
+                    }
+                }).start();
+
             }
         });
     }
