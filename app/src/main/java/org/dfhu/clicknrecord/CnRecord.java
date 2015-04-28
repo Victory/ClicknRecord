@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 
 
@@ -32,6 +31,7 @@ public class CnRecord extends ActionBarActivity {
     private MediaRecorder mr = null;
     private Integer numSeconds = 5;
     private boolean recordingStopped = false;
+    private boolean playingStopped = false;
     private boolean currentlyPlaying = false;
 
     private RecordingsAdapter recordingsAdapter = null;
@@ -51,7 +51,7 @@ public class CnRecord extends ActionBarActivity {
 
         bindPlaybackButton();
 
-        bindStopRecordingButton();
+        bindStopButton();
 
         File[] files = getOutputDir().listFiles();
         if (files.length > 0) {
@@ -95,13 +95,14 @@ public class CnRecord extends ActionBarActivity {
         });
     }
 
-    private void bindStopRecordingButton() {
-        Button stopRecordingButton = (Button) findViewById(R.id.stopRecording);
+    private void bindStopButton() {
+        Button stopRecordingButton = (Button) findViewById(R.id.stopButton);
 
         stopRecordingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 recordingStopped = true;
+                playingStopped = true;
                 Toast.makeText(
                         getApplicationContext(),
                         "Stopping Recording",
@@ -142,12 +143,21 @@ public class CnRecord extends ActionBarActivity {
                         }
 
                         while(mPlayer.isPlaying()) {
+                            if (playingStopped) {
+                                try {
+                                    mPlayer.stop();
+                                } catch (IllegalStateException e) {
+                                    Log.w("RECORDING", "IllegalStateException");
+                                }
+                                break;
+                            }
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
+                        playingStopped = false;
                         currentlyPlaying = false;
                     }
                 }).start();
