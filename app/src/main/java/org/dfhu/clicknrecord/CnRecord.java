@@ -29,7 +29,7 @@ public class CnRecord extends ActionBarActivity {
 
 
     private MediaRecorder mr = null;
-    private Integer numSeconds = 5;
+    private Integer numSeconds = 45;
     private boolean recordingStopped = false;
     private boolean playingStopped = false;
     private boolean currentlyPlaying = false;
