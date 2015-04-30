@@ -117,9 +117,6 @@ public class CnRecord extends ActionBarActivity {
         playback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -133,30 +130,7 @@ public class CnRecord extends ActionBarActivity {
                             return;
                         }
 
-                        MediaPlayer mPlayer = new MediaPlayer();
-                        try {
-                            mPlayer.setDataSource(getLatestFilename());
-                            mPlayer.prepare();
-                            mPlayer.start();
-                        } catch (IOException exc) {
-                            Log.e("playback", "prepare() failed:" + exc.getMessage());
-                        }
-
-                        while(mPlayer.isPlaying()) {
-                            if (playingStopped) {
-                                try {
-                                    mPlayer.stop();
-                                } catch (IllegalStateException e) {
-                                    Log.w("RECORDING", "IllegalStateException");
-                                }
-                                break;
-                            }
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        playRecording();
                         playingStopped = false;
                         currentlyPlaying = false;
                     }
@@ -164,6 +138,33 @@ public class CnRecord extends ActionBarActivity {
 
             }
         });
+    }
+
+    private void playRecording() {
+        MediaPlayer mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(getLatestFilename());
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException exc) {
+            Log.e("playback", "prepare() failed:" + exc.getMessage());
+        }
+
+        while(mPlayer.isPlaying()) {
+            if (playingStopped) {
+                try {
+                    mPlayer.stop();
+                } catch (IllegalStateException e) {
+                    Log.w("RECORDING", "IllegalStateException");
+                }
+                break;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void bindRecordNowButton() {
