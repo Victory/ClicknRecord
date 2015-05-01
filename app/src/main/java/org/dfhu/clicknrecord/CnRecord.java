@@ -298,9 +298,9 @@ public class CnRecord extends ActionBarActivity {
 
         Date now = new Date();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-H:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-HH:mm:ss");
 
-        return recordingDir + "/recorded-" + dateFormat.format(now) + ".3gp";
+        return recordingDir + "/cnr-" + dateFormat.format(now) + ".3gp";
     }
 
     @Override
