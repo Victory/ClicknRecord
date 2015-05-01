@@ -31,7 +31,7 @@ public class CnRecord extends ActionBarActivity {
     private MediaRecorder mr = null;
     private Integer numSeconds = 45;
     private boolean recordingStopped = false;
-    private boolean playingStopped = false;
+    private boolean stopPlaying = false;
     private boolean currentlyPlaying = false;
 
     private RecordingsAdapter recordingsAdapter = null;
@@ -46,20 +46,13 @@ public class CnRecord extends ActionBarActivity {
         final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
         recordingsAdapter = new RecordingsAdapter(this, fileList);
         recordingsView.setAdapter(recordingsAdapter);
+        updateAdapter();
 
         bindRecordNowButton();
 
         bindPlaybackButton();
 
         bindStopButton();
-
-        File[] files = getOutputDir().listFiles();
-        if (files.length > 0) {
-            for (File file: getOutputDir().listFiles()) {
-                RecordedFile recorded = new RecordedFile(file.getName(), file.getAbsolutePath());
-                fileList.add(recorded);
-            }
-        }
 
         recordingsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -102,7 +95,7 @@ public class CnRecord extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 recordingStopped = true;
-                playingStopped = true;
+                stopPlaying = true;
                 Toast.makeText(
                         getApplicationContext(),
                         "Stopping Recording",
@@ -131,7 +124,7 @@ public class CnRecord extends ActionBarActivity {
                         }
 
                         playRecording();
-                        playingStopped = false;
+                        stopPlaying = false;
                         currentlyPlaying = false;
                     }
                 }).start();
@@ -151,7 +144,7 @@ public class CnRecord extends ActionBarActivity {
         }
 
         while(mPlayer.isPlaying()) {
-            if (playingStopped) {
+            if (stopPlaying) {
                 try {
                     mPlayer.stop();
                 } catch (IllegalStateException e) {
