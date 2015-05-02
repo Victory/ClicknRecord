@@ -42,10 +42,6 @@ public class CnRecord extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cn_record);
 
-
-        final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
-        recordingsAdapter = new RecordingsAdapter(this, fileList);
-        recordingsView.setAdapter(recordingsAdapter);
         updateAdapter();
 
         bindRecordNowButton();
@@ -53,6 +49,14 @@ public class CnRecord extends ActionBarActivity {
         bindPlaybackButton();
 
         bindStopButton();
+
+        setupRecordingsView();
+    }
+
+    private void setupRecordingsView() {
+        final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
+        recordingsAdapter = new RecordingsAdapter(this, fileList);
+        recordingsView.setAdapter(recordingsAdapter);
 
         recordingsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
