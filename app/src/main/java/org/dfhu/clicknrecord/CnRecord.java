@@ -42,6 +42,8 @@ public class CnRecord extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cn_record);
 
+        setupRecordingsView();
+
         updateAdapter();
 
         bindRecordNowButton();
@@ -50,7 +52,7 @@ public class CnRecord extends ActionBarActivity {
 
         bindStopButton();
 
-        setupRecordingsView();
+
     }
 
     private void setupRecordingsView() {
@@ -170,7 +172,7 @@ public class CnRecord extends ActionBarActivity {
         recordNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CharSequence msg = getString(R.string.recording_for_X_seconds);
+                CharSequence msg = getString(R.string.recording_for_X_seconds, numSeconds);
                 Context context = getApplicationContext();
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 

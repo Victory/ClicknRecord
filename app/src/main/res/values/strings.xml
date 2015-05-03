@@ -4,5 +4,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="record_now">Record Now</string>
-    <string name="recording_for_X_seconds">Recording for 5 seconds</string>
+    <string name="recording_for_X_seconds">Recording for %1$d seconds</string>
 </resources>
