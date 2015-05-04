@@ -1,6 +1,9 @@
 package org.dfhu.clicknrecord;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -15,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -51,7 +55,6 @@ public class CnRecord extends ActionBarActivity {
         bindPlaybackButton();
 
         bindStopButton();
-
 
     }
 
@@ -176,6 +179,7 @@ public class CnRecord extends ActionBarActivity {
                 Context context = getApplicationContext();
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 
+                handleLocation();
 
                 AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
 
@@ -208,6 +212,47 @@ public class CnRecord extends ActionBarActivity {
             }
         }
         recordingsAdapter.notifyDataSetChanged();
+    }
+
+    private void handleLocation () {
+
+        LocationManager locationManager =
+                (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                double lon = location.getLongitude();
+                double lat = location.getLatitude();
+
+                TextView lonText = (TextView) findViewById(R.id.lonText);
+                TextView latText = (TextView) findViewById(R.id.latText);
+
+                lonText.setText("lon: " + lon);
+                latText.setText("lat: " + lat);
+
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
     }
 
     private void recordNow() {
@@ -266,6 +311,8 @@ public class CnRecord extends ActionBarActivity {
             // java.lang.RuntimeException: Can't create handler
             // inside thread that has not called Looper.prepare()
         }
+
+
 
         mr.release();
     }
