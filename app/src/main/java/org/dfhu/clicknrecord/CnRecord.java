@@ -224,12 +224,14 @@ public class CnRecord extends ActionBarActivity {
             public void onLocationChanged(Location location) {
                 double lon = location.getLongitude();
                 double lat = location.getLatitude();
-
+                Float accuracy = location.getAccuracy();
                 TextView lonText = (TextView) findViewById(R.id.lonText);
                 TextView latText = (TextView) findViewById(R.id.latText);
+                TextView accuracyText = (TextView) findViewById(R.id.accuracyText);
 
                 lonText.setText("lon: " + lon);
                 latText.setText("lat: " + lat);
+                accuracyText.setText(accuracy.toString());
 
 
             }
