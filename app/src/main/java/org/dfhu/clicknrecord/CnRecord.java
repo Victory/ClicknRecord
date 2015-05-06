@@ -34,9 +34,9 @@ public class CnRecord extends ActionBarActivity {
 
     private MediaRecorder mr = null;
     private Integer numSeconds = 45;
-    private boolean recordingStopped = false;
-    private boolean stopPlaying = false;
-    private boolean currentlyPlaying = false;
+    volatile private boolean recordingStopped = false;
+    volatile private boolean stopPlaying = false;
+    volatile private boolean currentlyPlaying = false;
 
     private RecordingsAdapter recordingsAdapter = null;
     final ArrayList<RecordedFile> fileList = new ArrayList<>();
