@@ -229,9 +229,9 @@ public class CnRecord extends ActionBarActivity {
                 TextView latText = (TextView) findViewById(R.id.latText);
                 TextView accuracyText = (TextView) findViewById(R.id.accuracyText);
 
-                lonText.setText("lon: " + lon);
-                latText.setText("lat: " + lat);
-                accuracyText.setText(accuracy.toString());
+                lonText.setText(String.format("lon: %.3f", lon));
+                latText.setText(String.format("lat: %.3f", lat));
+                accuracyText.setText(String.format("acc: %.2f", accuracy));
 
 
             }
