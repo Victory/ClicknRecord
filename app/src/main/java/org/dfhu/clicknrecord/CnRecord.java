@@ -203,10 +203,11 @@ public class CnRecord extends ActionBarActivity {
     private void updateAdapter ()
     {
         File[] files = getOutputDir().listFiles();
+        Arrays.sort(files);
         fileList.clear();
         if (files.length > 0) {
 
-            for (File file : getOutputDir().listFiles()) {
+            for (File file : files) {
                 RecordedFile recorded = new RecordedFile(file.getName(), file.getAbsolutePath());
                 fileList.add(recorded);
             }
@@ -232,6 +233,7 @@ public class CnRecord extends ActionBarActivity {
                 lonText.setText(String.format("lon: %.3f", lon));
                 latText.setText(String.format("lat: %.3f", lat));
                 accuracyText.setText(String.format("acc: %.2f", accuracy));
+                // TODO: need to stop polling location
 
 
             }
