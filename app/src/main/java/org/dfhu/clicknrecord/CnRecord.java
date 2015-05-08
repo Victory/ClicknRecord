@@ -27,6 +27,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 public class CnRecord extends ActionBarActivity {
@@ -154,18 +161,22 @@ public class CnRecord extends ActionBarActivity {
 
         while(mPlayer.isPlaying()) {
             if (stopPlaying) {
-                try {
-                    mPlayer.stop();
-                } catch (IllegalStateException e) {
-                    Log.w("RECORDING", "IllegalStateException");
-                }
+                stopRecorderGracefully(mPlayer);
                 break;
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void stopRecorderGracefully (final MediaPlayer mPlayer) {
+        try {
+            mPlayer.stop();
+        } catch (IllegalStateException e) {
+            Log.w("RECORDING", "IllegalStateException");
         }
     }
 
