@@ -27,13 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 
 public class CnRecord extends ActionBarActivity {
@@ -42,8 +35,8 @@ public class CnRecord extends ActionBarActivity {
     private MediaRecorder mr = null;
     private Integer numSeconds = 45;
     volatile private boolean recordingStopped = false;
-    volatile private boolean stopPlaying = false;
     volatile private boolean currentlyPlaying = false;
+    final private MediaPlayer mPlayer = new MediaPlayer();
 
     private RecordingsAdapter recordingsAdapter = null;
     final ArrayList<RecordedFile> fileList = new ArrayList<>();
@@ -58,6 +51,13 @@ public class CnRecord extends ActionBarActivity {
         updateAdapter();
 
         bindRecordNowButton();
+
+        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mPlayer.start();
+            }
+        });
 
         bindPlaybackButton();
 
@@ -105,13 +105,14 @@ public class CnRecord extends ActionBarActivity {
     }
 
     private void bindStopButton() {
-        Button stopRecordingButton = (Button) findViewById(R.id.stopButton);
+        Button stopButton = (Button) findViewById(R.id.stopButton);
 
-        stopRecordingButton.setOnClickListener(new View.OnClickListener() {
+        stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 recordingStopped = true;
-                stopPlaying = true;
+                stopPlaying();
+
                 Toast.makeText(
                         getApplicationContext(),
                         "Stopping Recording",
@@ -140,7 +141,7 @@ public class CnRecord extends ActionBarActivity {
                         }
 
                         playRecording();
-                        stopPlaying = false;
+
                         currentlyPlaying = false;
                     }
                 }).start();
@@ -150,29 +151,28 @@ public class CnRecord extends ActionBarActivity {
     }
 
     private void playRecording() {
-        MediaPlayer mPlayer = new MediaPlayer();
+
+        if (mPlayer.isPlaying()) {
+            return;
+        }
+
+
         try {
+            mPlayer.reset();
             mPlayer.setDataSource(getLatestFilename());
-            mPlayer.prepare();
-            mPlayer.start();
+            mPlayer.prepareAsync();
         } catch (IOException exc) {
             Log.e("playback", "prepare() failed:" + exc.getMessage());
         }
 
-        while(mPlayer.isPlaying()) {
-            if (stopPlaying) {
-                stopRecorderGracefully(mPlayer);
-                break;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    private void stopRecorderGracefully (final MediaPlayer mPlayer) {
+    private void stopPlaying() {
+
+        if (!mPlayer.isPlaying()) {
+            return;
+        }
+
         try {
             mPlayer.stop();
         } catch (IllegalStateException e) {
