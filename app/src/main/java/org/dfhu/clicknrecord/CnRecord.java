@@ -27,16 +27,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 
 public class CnRecord extends ActionBarActivity {
 
 
-    private MediaRecorder mr = null;
-    private Integer numSeconds = 45;
+    final private MediaRecorder mr = new MediaRecorder();
+    private Integer numSeconds = 5;
     volatile private boolean recordingStopped = false;
     volatile private boolean currentlyPlaying = false;
     final private MediaPlayer mPlayer = new MediaPlayer();
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newScheduledThreadPool(1);
 
     private RecordingsAdapter recordingsAdapter = null;
     final ArrayList<RecordedFile> fileList = new ArrayList<>();
@@ -273,11 +280,10 @@ public class CnRecord extends ActionBarActivity {
     private void recordNow() {
         String fn = getOutputFilename();
 
-        ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
+        final ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
         mProgress.setMax(numSeconds);
-        mProgress.setProgress(10);
+        mProgress.setProgress(1);
 
-        mr = new MediaRecorder();
         mr.setMaxFileSize(1 << 20);
         mr.setAudioSource(MediaRecorder.AudioSource.MIC);
         mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -294,42 +300,26 @@ public class CnRecord extends ActionBarActivity {
 
         mr.start();
 
-        recordingStopped = false;
-        for (int ii = 1; ii <= numSeconds + 1; ii++) {
-            if (recordingStopped) {
-                mProgress.setProgress(numSeconds);
 
 
-                // little extra time after stop button
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                break;
+        final Runnable progressUpdater = new Runnable() {
+            @Override
+            public void run() {
+                int ii = mProgress.getProgress();
+                mProgress.setProgress(ii + 1);
             }
+        };
 
-            try {
-                mProgress.setProgress(ii);
-                Thread.sleep(1000);
-            } catch (InterruptedException exc) {
-                // ok
+        final ScheduledFuture<?> progressHandle =
+                scheduler.scheduleAtFixedRate(progressUpdater, 0, 1, TimeUnit.SECONDS);
+
+        scheduler.schedule(new Runnable() {
+            public void run() {
+                progressHandle.cancel(true);
+                mr.stop();
+                mr.release();
             }
-        }
-
-
-        try {
-            mr.stop();
-        } catch (IllegalStateException e) {
-            // can't toast here throws
-            // java.lang.RuntimeException: Can't create handler
-            // inside thread that has not called Looper.prepare()
-        }
-
-
-
-        mr.release();
+        }, numSeconds, TimeUnit.SECONDS);
     }
 
     private File getOutputDir ()
