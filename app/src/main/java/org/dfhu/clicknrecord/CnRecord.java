@@ -280,6 +280,9 @@ public class CnRecord extends ActionBarActivity {
 
     private void recordNow() {
 
+        if (isRecording.getAndSet(true)) {
+            return;
+        }
         String fn = getOutputFilename();
 
         final ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
