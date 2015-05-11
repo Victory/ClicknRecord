@@ -120,11 +120,6 @@ public class CnRecord extends ActionBarActivity {
             public void onClick(View v) {
                 stopRecording();
                 stopPlaying();
-
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Stopping Recording",
-                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -196,7 +191,10 @@ public class CnRecord extends ActionBarActivity {
             public void onClick(View v) {
                 CharSequence msg = getString(R.string.recording_for_X_seconds, numSeconds);
                 Context context = getApplicationContext();
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+
+                if (!isRecording.get()) {
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
 
                 handleLocation();
 
@@ -205,6 +203,7 @@ public class CnRecord extends ActionBarActivity {
                     @Override
                     protected Integer doInBackground(Integer... params) {
                         recordNow();
+
                         return 1;
                     }
 
@@ -333,6 +332,10 @@ public class CnRecord extends ActionBarActivity {
     private void stopRecording () {
         if (isRecording.getAndSet(false)) {
             mr.stop();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Stopping Recording",
+                    Toast.LENGTH_SHORT).show();
         }
     }
     private File getOutputDir ()
