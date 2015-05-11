@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -279,9 +280,6 @@ public class CnRecord extends ActionBarActivity {
 
     private void recordNow() {
 
-        if (isRecording.getAndSet(true)) {
-            return;
-        }
         String fn = getOutputFilename();
 
         final ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
@@ -372,7 +370,7 @@ public class CnRecord extends ActionBarActivity {
 
         Date now = new Date();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-HH:mm:ss", Locale.US);
 
         return recordingDir + "/cnr-" + dateFormat.format(now) + ".3gp";
     }
