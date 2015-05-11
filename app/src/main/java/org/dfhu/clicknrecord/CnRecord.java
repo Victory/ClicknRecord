@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class CnRecord extends ActionBarActivity {
@@ -38,7 +39,7 @@ public class CnRecord extends ActionBarActivity {
 
     final private MediaRecorder mr = new MediaRecorder();
     private Integer numSeconds = 5;
-    volatile private boolean recordingStopped = false;
+    volatile private AtomicBoolean isRecording = new AtomicBoolean(false);
     volatile private boolean currentlyPlaying = false;
     final private MediaPlayer mPlayer = new MediaPlayer();
 
@@ -117,7 +118,7 @@ public class CnRecord extends ActionBarActivity {
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recordingStopped = true;
+                stopRecording();
                 stopPlaying();
 
                 Toast.makeText(
@@ -278,6 +279,10 @@ public class CnRecord extends ActionBarActivity {
     }
 
     private void recordNow() {
+
+        if (isRecording.getAndSet(true)) {
+            return;
+        }
         String fn = getOutputFilename();
 
         final ProgressBar mProgress = (ProgressBar) findViewById(R.id.recordingTimeProgressBar);
@@ -301,14 +306,18 @@ public class CnRecord extends ActionBarActivity {
         mr.start();
 
 
-
         final Runnable progressUpdater = new Runnable() {
             @Override
             public void run() {
+                if (!isRecording.get()) {
+                    mProgress.setProgress(numSeconds);
+                    return;
+                }
                 int ii = mProgress.getProgress();
                 mProgress.setProgress(ii + 1);
             }
         };
+
 
         final ScheduledFuture<?> progressHandle =
                 scheduler.scheduleAtFixedRate(progressUpdater, 0, 1, TimeUnit.SECONDS);
@@ -316,12 +325,16 @@ public class CnRecord extends ActionBarActivity {
         scheduler.schedule(new Runnable() {
             public void run() {
                 progressHandle.cancel(true);
-                mr.stop();
-                mr.release();
+                stopRecording();
             }
         }, numSeconds, TimeUnit.SECONDS);
     }
 
+    private void stopRecording () {
+        if (isRecording.getAndSet(false)) {
+            mr.stop();
+        }
+    }
     private File getOutputDir ()
     {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
