@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CnRecord extends ActionBarActivity {
 
-
     final private MediaRecorder mr = new MediaRecorder();
     private Integer numSeconds = 5;
     volatile private AtomicBoolean isRecording = new AtomicBoolean(false);
@@ -49,6 +48,7 @@ public class CnRecord extends ActionBarActivity {
 
     private RecordingsAdapter recordingsAdapter = null;
     final ArrayList<RecordedFile> fileList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +71,13 @@ public class CnRecord extends ActionBarActivity {
         bindPlaybackButton();
 
         bindStopButton();
-
     }
 
+
+    /**
+     * set up the list of currently recorded files and bind short click to play
+     * and long click to delete
+     */
     private void setupRecordingsView() {
         final ListView recordingsView = (ListView) findViewById(R.id.recordingsListView);
         recordingsAdapter = new RecordingsAdapter(this, fileList);
@@ -113,6 +117,10 @@ public class CnRecord extends ActionBarActivity {
         });
     }
 
+
+    /**
+     * bind the stop recording and top playing action button
+     */
     private void bindStopButton() {
         Button stopButton = (Button) findViewById(R.id.stopButton);
 
@@ -125,6 +133,10 @@ public class CnRecord extends ActionBarActivity {
         });
     }
 
+
+    /**
+     * bind the button that plays back the latest recording
+     */
     private void bindPlaybackButton() {
         final Button playback = (Button) findViewById(R.id.playback);
 
@@ -144,7 +156,7 @@ public class CnRecord extends ActionBarActivity {
                             return;
                         }
 
-                        playRecording();
+                        playLatestRecording();
 
                         currentlyPlaying = false;
                     }
@@ -154,12 +166,14 @@ public class CnRecord extends ActionBarActivity {
         });
     }
 
-    private void playRecording() {
+    /**
+     * play the latest recorded file
+     */
+    private void playLatestRecording() {
 
         if (mPlayer.isPlaying()) {
             return;
         }
-
 
         try {
             mPlayer.reset();
@@ -171,8 +185,11 @@ public class CnRecord extends ActionBarActivity {
 
     }
 
-    private void stopPlaying() {
 
+    /**
+     * stop the currently playing file
+     */
+    private void stopPlaying() {
         if (!mPlayer.isPlaying()) {
             return;
         }
@@ -184,6 +201,10 @@ public class CnRecord extends ActionBarActivity {
         }
     }
 
+
+    /**
+     * bind to the record button
+     */
     private void bindRecordNowButton() {
         final Button recordNowButton = (Button) findViewById(R.id.recordNow);
 
@@ -204,7 +225,6 @@ public class CnRecord extends ActionBarActivity {
                     @Override
                     protected Integer doInBackground(Integer... params) {
                         recordNow();
-
                         return 1;
                     }
 
@@ -219,6 +239,10 @@ public class CnRecord extends ActionBarActivity {
         });
     }
 
+
+    /**
+     * update the recorded file list
+     */
     private void updateAdapter ()
     {
         File[] files = getOutputDir().listFiles();
@@ -234,6 +258,10 @@ public class CnRecord extends ActionBarActivity {
         recordingsAdapter.notifyDataSetChanged();
     }
 
+
+    /**
+     * handle showing location information
+     */
     private void handleLocation () {
 
         LocationManager locationManager =
@@ -278,6 +306,9 @@ public class CnRecord extends ActionBarActivity {
 
     }
 
+    /**
+     * start recording if you are not recording yet
+     */
     private void recordNow() {
 
         if (isRecording.getAndSet(true)) {
@@ -302,9 +333,7 @@ public class CnRecord extends ActionBarActivity {
             return;
         }
 
-
         mr.start();
-
 
         final Runnable progressUpdater = new Runnable() {
             @Override
@@ -318,7 +347,6 @@ public class CnRecord extends ActionBarActivity {
             }
         };
 
-
         final ScheduledFuture<?> progressHandle =
                 scheduler.scheduleAtFixedRate(progressUpdater, 0, 1, TimeUnit.SECONDS);
 
@@ -330,6 +358,9 @@ public class CnRecord extends ActionBarActivity {
         }, numSeconds, TimeUnit.SECONDS);
     }
 
+    /**
+     * stop the mediarecorder if its running
+     */
     private void stopRecording () {
         if (isRecording.getAndSet(false)) {
             mr.stop();
@@ -339,6 +370,11 @@ public class CnRecord extends ActionBarActivity {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * return the output directory for recorded files
+     * @return File
+     */
     private File getOutputDir ()
     {
         String dir = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -351,6 +387,7 @@ public class CnRecord extends ActionBarActivity {
         }
         return recordingDir;
     }
+
 
     /**
      * get the last file recorded
@@ -368,6 +405,11 @@ public class CnRecord extends ActionBarActivity {
         return null;
     }
 
+
+    /**
+     * get the name of the next file to record to
+     * @return String
+     */
     private String getOutputFilename () {
         File recordingDir = getOutputDir();
 
@@ -377,6 +419,7 @@ public class CnRecord extends ActionBarActivity {
 
         return recordingDir + "/cnr-" + dateFormat.format(now) + ".3gp";
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
