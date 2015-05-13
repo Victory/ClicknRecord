@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -264,10 +266,10 @@ public class CnRecord extends ActionBarActivity {
      */
     private void handleLocation () {
 
-        LocationManager locationManager =
+        final LocationManager locationManager =
                 (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        LocationListener locationListener = new LocationListener() {
+        final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 double lon = location.getLongitude();
@@ -303,6 +305,15 @@ public class CnRecord extends ActionBarActivity {
 
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+        Timer stopPolling = new Timer();
+        TimerTask stopPollingTask = new TimerTask() {
+            @Override
+            public void run() {
+                locationManager.removeUpdates(locationListener);
+            }
+        };
+        stopPolling.schedule(stopPollingTask, numSeconds * 1000);
 
     }
 
