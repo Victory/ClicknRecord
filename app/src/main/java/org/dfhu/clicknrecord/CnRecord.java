@@ -339,7 +339,7 @@ public class CnRecord extends ActionBarActivity {
             @Override
             public void run() {
                 if (!isRecording.get()) {
-                    mProgress.setProgress(numSeconds);
+                    mProgress.setProgress(0);
                     return;
                 }
                 int ii = mProgress.getProgress();
