@@ -10,9 +10,11 @@ public class SelfStoppingIntervalRunnable implements Runnable {
     private final Runnable delegated;
     private volatile ScheduledFuture<?> todo;
     public AtomicBoolean shouldStop = new AtomicBoolean(false);
+
     public SelfStoppingIntervalRunnable (Runnable r) {
         delegated = r;
     }
+
     @Override
     public void run() {
         if (shouldStop()) {
@@ -21,12 +23,12 @@ public class SelfStoppingIntervalRunnable implements Runnable {
         delegated.run();
     }
 
-    private void setShouldStop(boolean shouldStop) {
+    public void setShouldStop(boolean shouldStop) {
         this.shouldStop.set(shouldStop);
     }
 
     private boolean shouldStop() {
-        return false;
+        return shouldStop.get();
     }
 
     public void scheduleAtFixedRate(
