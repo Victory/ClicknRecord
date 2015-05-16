@@ -83,10 +83,8 @@ public class SelfStoppingIntervalRunnerTest extends TestCase {
         ssir.scheduleAtFixedRate(executor, 0, 1, TimeUnit.SECONDS);
 
         Thread.sleep(3000);
-        ssir.setShouldStop(true);
-        Thread.sleep(1000);
 
         int result = r.count.get();
-        assertEquals(result, 1);
+        assertEquals(result, 2);
     }
 }
