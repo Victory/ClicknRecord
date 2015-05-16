@@ -7,12 +7,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SelfStoppingIntervalRunnable implements Runnable {
-    private final Runnable delegated;
+    private final ISelfStoppingRunnable delegated;
     private volatile ScheduledFuture<?> todo;
     public AtomicBoolean shouldStop = new AtomicBoolean(false);
 
-    public SelfStoppingIntervalRunnable (Runnable r) {
+    public SelfStoppingIntervalRunnable (ISelfStoppingRunnable r) {
         delegated = r;
+        delegated.setInterval(this);
     }
 
     @Override
