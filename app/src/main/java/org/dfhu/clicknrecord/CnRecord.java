@@ -282,6 +282,11 @@ public class CnRecord extends ActionBarActivity {
                 latText.setText(String.format("lat: %.3f", lat));
                 accuracyText.setText(String.format("acc: %.2f", accuracy));
 
+                try {
+                    mr.setLocation((float) lon, (float) lat);
+                } catch (IllegalStateException e) {
+                    // tried and failed
+                }
             }
 
             @Override
