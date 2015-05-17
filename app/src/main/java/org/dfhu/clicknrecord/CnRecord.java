@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CnRecord extends ActionBarActivity {
 
     final private MediaRecorder mr = new MediaRecorder();
-    private Integer numSeconds = 5;
+    private Integer numSeconds = 15;
     volatile private AtomicBoolean isRecording = new AtomicBoolean(false);
     volatile private boolean currentlyPlaying = false;
     final private MediaPlayer mPlayer = new MediaPlayer();
@@ -222,14 +222,13 @@ public class CnRecord extends ActionBarActivity {
 
                 handleLocation();
 
-                AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
-
+                AsyncTask<Integer, Integer, Integer> task =
+                        new AsyncTask<Integer, Integer, Integer>() {
                     @Override
                     protected Integer doInBackground(Integer... params) {
                         recordNow();
                         return 1;
                     }
-
                     @Override
                     protected void onPostExecute(Integer result) {
                         updateAdapter();
@@ -282,8 +281,6 @@ public class CnRecord extends ActionBarActivity {
                 lonText.setText(String.format("lon: %.3f", lon));
                 latText.setText(String.format("lat: %.3f", lat));
                 accuracyText.setText(String.format("acc: %.2f", accuracy));
-                // TODO: need to stop polling location
-
 
             }
 
@@ -428,7 +425,7 @@ public class CnRecord extends ActionBarActivity {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-HH:mm:ss", Locale.US);
 
-        return recordingDir + "/cnr-" + dateFormat.format(now) + ".3gp";
+        return recordingDir + "/cnr-" + dateFormat.format(now) + ".mp4";
     }
 
 

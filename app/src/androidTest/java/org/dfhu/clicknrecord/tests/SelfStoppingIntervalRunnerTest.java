@@ -42,16 +42,16 @@ public class SelfStoppingIntervalRunnerTest extends TestCase {
 
         SelfStoppingIntervalRunnable ssir = new SelfStoppingIntervalRunnable(r);
 
-        ssir.scheduleAtFixedRate(executor, 0, 1, TimeUnit.SECONDS);
+        ssir.scheduleAtFixedRate(executor, 0, 1, TimeUnit.MILLISECONDS);
 
-        Thread.sleep(3000);
+        Thread.sleep(300);
         ssir.setShouldStop(true);
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         int result = r.count.get();
         assertTrue(result >= 3);
 
-        Thread.sleep(3000);
+        Thread.sleep(300);
         assertEquals(result, r.count.get());
 
     }
@@ -80,9 +80,9 @@ public class SelfStoppingIntervalRunnerTest extends TestCase {
 
         SelfStoppingIntervalRunnable ssir = new SelfStoppingIntervalRunnable(r);
 
-        ssir.scheduleAtFixedRate(executor, 0, 1, TimeUnit.SECONDS);
+        ssir.scheduleAtFixedRate(executor, 0, 1, TimeUnit.MILLISECONDS);
 
-        Thread.sleep(3000);
+        Thread.sleep(300);
 
         int result = r.count.get();
         assertEquals(result, 2);
