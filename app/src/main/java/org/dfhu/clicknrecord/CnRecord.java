@@ -45,6 +45,9 @@ public class CnRecord extends ActionBarActivity {
     volatile private boolean currentlyPlaying = false;
     final private MediaPlayer mPlayer = new MediaPlayer();
 
+    private float lon = 0;
+    private float lat = 0;
+
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(1);
 
@@ -271,8 +274,8 @@ public class CnRecord extends ActionBarActivity {
         final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                double lon = location.getLongitude();
-                double lat = location.getLatitude();
+                lon =  (float) location.getLongitude();
+                lat = (float) location.getLatitude();
                 Float accuracy = location.getAccuracy();
                 TextView lonText = (TextView) findViewById(R.id.lonText);
                 TextView latText = (TextView) findViewById(R.id.latText);
@@ -283,7 +286,7 @@ public class CnRecord extends ActionBarActivity {
                 accuracyText.setText(String.format("acc: %.2f", accuracy));
 
                 try {
-                    mr.setLocation((float) lon, (float) lat);
+                    mr.setLocation(lon, lat);
                 } catch (IllegalStateException e) {
                     // tried and failed
                 }
@@ -338,6 +341,12 @@ public class CnRecord extends ActionBarActivity {
         mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mr.setOutputFile(fn);
         mr.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mr.setLocation(lon, lat);
+        } catch (IllegalStateException e) {
+            // tried and failed
+        }
 
         try {
             mr.prepare();
